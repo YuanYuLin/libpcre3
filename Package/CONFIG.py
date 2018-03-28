@@ -7,9 +7,11 @@ arch = ""
 src_lib_dir = ""
 src_usr_lib_dir = ""
 dst_lib_dir = ""
-dst_usr_lib_dir = ""
 src_include_dir = ""
 dst_include_dir = ""
+src_pkgconfig_dir = ""
+dst_pkgconfig_dir = ""
+install_dir = ""
 
 def set_global(args):
     global pkg_path
@@ -18,9 +20,11 @@ def set_global(args):
     global src_lib_dir
     global dst_lib_dir
     global src_usr_lib_dir
-    global dst_usr_lib_dir
     global src_include_dir
     global dst_include_dir
+    global src_pkgconfig_dir
+    global dst_pkgconfig_dir
+    global install_dir
     pkg_path = args["pkg_path"]
     output_dir = args["output_path"]
     arch = ops.getEnv("ARCH_ALT")
@@ -36,11 +40,13 @@ def set_global(args):
     else:
         sys.exit(1)
     dst_lib_dir = ops.path_join(output_dir, "lib")
-    dst_usr_lib_dir = ops.path_join(output_dir, "usr/lib")
+    install_dir = ops.path_join(output_dir, "pkgconfig")
 
     src_include_dir = iopc.getBaseRootFile("/usr/include")
     dst_include_dir = ops.path_join("include",args["pkg_name"])
 
+    src_pkgconfig_dir = ops.path_join(pkg_path, "pkgconfig")
+    dst_pkgconfig_dir = ops.path_join(install_dir, "pkgconfig")
 
 def MAIN_ENV(args):
     set_global(args)
@@ -55,11 +61,11 @@ def MAIN_EXTRACT(args):
     ops.ln(dst_lib_dir, "libpcre.so.3.13.3", "libpcre.so.3")
     ops.ln(dst_lib_dir, "libpcre.so.3.13.3", "libpcre.so")
 
-    ops.mkdir(dst_usr_lib_dir)
-    ops.copyto(ops.path_join(src_usr_lib_dir, "libpcreposix.so.3.13.3"), dst_usr_lib_dir)
-    ops.ln(dst_usr_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3.13")
-    ops.ln(dst_usr_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3")
-    ops.ln(dst_usr_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so")
+    ops.mkdir(dst_lib_dir)
+    ops.copyto(ops.path_join(src_usr_lib_dir, "libpcreposix.so.3.13.3"), dst_lib_dir)
+    ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3.13")
+    ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3")
+    ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so")
     return True
 
 def MAIN_PATCH(args, patch_group_name):
@@ -90,8 +96,12 @@ def MAIN_INSTALL(args):
     iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcrecpparg.h"), dst_include_dir)
     iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcreposix.h"), dst_include_dir)
 
+    ops.mkdir(dst_pkgconfig_dir)
+    ops.copyto(ops.path_join(src_pkgconfig_dir, '.'), dst_pkgconfig_dir)
+
     iopc.installBin(args["pkg_name"], ops.path_join(dst_lib_dir, "."), "lib") 
-    iopc.installBin(args["pkg_name"], ops.path_join(dst_usr_lib_dir, "."), "usr/lib") 
+    iopc.installBin(args["pkg_name"], ops.path_join(dst_pkgconfig_dir, '.'), "pkgconfig")
+
     return False
 
 def MAIN_CLEAN_BUILD(args):
