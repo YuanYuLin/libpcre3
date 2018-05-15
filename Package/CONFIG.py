@@ -9,6 +9,7 @@ src_usr_lib_dir = ""
 dst_lib_dir = ""
 src_include_dir = ""
 dst_include_dir = ""
+tmp_include_dir = ""
 src_pkgconfig_dir = ""
 dst_pkgconfig_dir = ""
 install_dir = ""
@@ -22,6 +23,7 @@ def set_global(args):
     global src_usr_lib_dir
     global src_include_dir
     global dst_include_dir
+    global tmp_include_dir
     global src_pkgconfig_dir
     global dst_pkgconfig_dir
     global install_dir
@@ -44,6 +46,7 @@ def set_global(args):
 
     src_include_dir = iopc.getBaseRootFile("/usr/include")
     dst_include_dir = ops.path_join("include",args["pkg_name"])
+    tmp_include_dir = ops.path_join(output_dir, ops.path_join("include",args["pkg_name"]))
 
     src_pkgconfig_dir = ops.path_join(pkg_path, "pkgconfig")
     dst_pkgconfig_dir = ops.path_join(install_dir, "pkgconfig")
@@ -66,6 +69,7 @@ def MAIN_EXTRACT(args):
     ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3.13")
     ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3")
     ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so")
+
     return True
 
 def MAIN_PATCH(args, patch_group_name):
@@ -84,22 +88,25 @@ def MAIN_CONFIGURE(args):
 
 def MAIN_BUILD(args):
     set_global(args)
+
+    ops.mkdir(tmp_include_dir)
+    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre.h"), tmp_include_dir)
+    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre_scanner.h"), tmp_include_dir)
+    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre_stringpiece.h"), tmp_include_dir)
+    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcrecpp.h"), tmp_include_dir)
+    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcrecpparg.h"), tmp_include_dir)
+    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcreposix.h"), tmp_include_dir)
+
+    ops.mkdir(dst_pkgconfig_dir)
+    ops.copyto(ops.path_join(src_pkgconfig_dir, '.'), dst_pkgconfig_dir)
+
     return False
 
 def MAIN_INSTALL(args):
     set_global(args)
 
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre.h"), dst_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre_scanner.h"), dst_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre_stringpiece.h"), dst_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcrecpp.h"), dst_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcrecpparg.h"), dst_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcreposix.h"), dst_include_dir)
-
-    ops.mkdir(dst_pkgconfig_dir)
-    ops.copyto(ops.path_join(src_pkgconfig_dir, '.'), dst_pkgconfig_dir)
-
     iopc.installBin(args["pkg_name"], ops.path_join(dst_lib_dir, "."), "lib") 
+    iopc.installBin(args["pkg_name"], ops.path_join(tmp_include_dir, "."), dst_include_dir)
     iopc.installBin(args["pkg_name"], ops.path_join(dst_pkgconfig_dir, '.'), "pkgconfig")
 
     return False
