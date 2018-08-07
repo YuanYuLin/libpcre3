@@ -70,6 +70,14 @@ def MAIN_EXTRACT(args):
     ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3")
     ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so")
 
+    ops.mkdir(tmp_include_dir)
+    ops.copyto(ops.path_join(src_include_dir, "pcre.h"), tmp_include_dir)
+    ops.copyto(ops.path_join(src_include_dir, "pcre_scanner.h"), tmp_include_dir)
+    ops.copyto(ops.path_join(src_include_dir, "pcre_stringpiece.h"), tmp_include_dir)
+    ops.copyto(ops.path_join(src_include_dir, "pcrecpp.h"), tmp_include_dir)
+    ops.copyto(ops.path_join(src_include_dir, "pcrecpparg.h"), tmp_include_dir)
+    ops.copyto(ops.path_join(src_include_dir, "pcreposix.h"), tmp_include_dir)
+
     return True
 
 def MAIN_PATCH(args, patch_group_name):
@@ -88,14 +96,6 @@ def MAIN_CONFIGURE(args):
 
 def MAIN_BUILD(args):
     set_global(args)
-
-    ops.mkdir(tmp_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre.h"), tmp_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre_scanner.h"), tmp_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcre_stringpiece.h"), tmp_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcrecpp.h"), tmp_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcrecpparg.h"), tmp_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "pcreposix.h"), tmp_include_dir)
 
     ops.mkdir(dst_pkgconfig_dir)
     ops.copyto(ops.path_join(src_pkgconfig_dir, '.'), dst_pkgconfig_dir)
