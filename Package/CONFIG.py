@@ -59,16 +59,18 @@ def MAIN_EXTRACT(args):
     set_global(args)
 
     ops.mkdir(dst_lib_dir)
-    ops.copyto(ops.path_join(src_lib_dir, "libpcre.so.3.13.3"), dst_lib_dir)
-    ops.ln(dst_lib_dir, "libpcre.so.3.13.3", "libpcre.so.3.13")
-    ops.ln(dst_lib_dir, "libpcre.so.3.13.3", "libpcre.so.3")
-    ops.ln(dst_lib_dir, "libpcre.so.3.13.3", "libpcre.so")
 
-    ops.mkdir(dst_lib_dir)
-    ops.copyto(ops.path_join(src_usr_lib_dir, "libpcreposix.so.3.13.3"), dst_lib_dir)
-    ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3.13")
-    ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so.3")
-    ops.ln(dst_lib_dir, "libpcreposix.so.3.13.3", "libpcreposix.so")
+    lib_so = "libpcre.so.3.13.1"
+    ops.copyto(ops.path_join(src_lib_dir, lib_so), dst_lib_dir)
+    ops.ln(dst_lib_dir, lib_so, "libpcre.so.3.13")
+    ops.ln(dst_lib_dir, lib_so, "libpcre.so.3")
+    ops.ln(dst_lib_dir, lib_so, "libpcre.so")
+
+    lib_so = "libpcreposix.so.3.13.1"
+    ops.copyto(ops.path_join(src_usr_lib_dir, lib_so), dst_lib_dir)
+    ops.ln(dst_lib_dir, lib_so, "libpcreposix.so.3.13")
+    ops.ln(dst_lib_dir, lib_so, "libpcreposix.so.3")
+    ops.ln(dst_lib_dir, lib_so, "libpcreposix.so")
 
     ops.mkdir(tmp_include_dir)
     ops.copyto(ops.path_join(src_include_dir, "pcre.h"), tmp_include_dir)
